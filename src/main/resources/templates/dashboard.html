@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Главная')}"></head>
+<body>
+<a class="skip-link" href="#main">Перейти к содержимому</a>
+<header th:replace="~{fragments/layout :: sidebar('dashboard')}"></header>
+<div class="app-shell">
+  <div th:replace="~{fragments/layout :: topbar('Главная')}"></div>
+  <main id="main" class="content">
+    <h1>Главная страница</h1>
+    <div th:replace="~{fragments/layout :: messages}"></div>
+    <p>Здесь можно управлять пользователями и их правами доступа.</p>
+    <h2 sec:authorize="hasAnyAuthority('USER_READ','ROLE_READ','AUDIT_READ')">Статистика</h2>
+    <table class="summary-table" sec:authorize="hasAnyAuthority('USER_READ','ROLE_READ','AUDIT_READ')">
+      <thead><tr><th scope="col">Показатель</th><th scope="col">Количество</th></tr></thead>
+      <tbody>
+        <tr sec:authorize="hasAuthority('USER_READ')"><td>Пользователи</td><td th:text="${userCount}">0</td></tr>
+        <tr sec:authorize="hasAuthority('USER_READ')"><td>Активные пользователи</td><td th:text="${enabledCount}">0</td></tr>
+        <tr sec:authorize="hasAuthority('ROLE_READ')"><td>Роли</td><td th:text="${roleCount}">0</td></tr>
+        <tr sec:authorize="hasAuthority('AUDIT_READ')"><td>Записи в журнале</td><td th:text="${auditCount}">0</td></tr>
+      </tbody>
+    </table>
+    <h2>Разделы</h2>
+    <ul>
+      <li sec:authorize="hasAuthority('USER_READ')"><a th:href="@{/users}">Пользователи</a> — просмотр и изменение учётных записей.</li>
+      <li sec:authorize="hasAuthority('ROLE_READ')"><a th:href="@{/roles}">Роли</a> — настройка разрешений.</li>
+      <li sec:authorize="hasAuthority('AUDIT_READ')"><a th:href="@{/audit}">Журнал действий</a> — история изменений.</li>
+      <li sec:authorize="!hasAnyAuthority('USER_READ','ROLE_READ','AUDIT_READ')">Права доступа пока не назначены. Обратитесь к администратору.</li>
+    </ul>
+  </main>
+  <footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+</body>
+</html>

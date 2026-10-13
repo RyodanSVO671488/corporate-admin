@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/admin-db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password: ""
+  h2:
+    console:
+      enabled: false
+app:
+  bootstrap:
+    demo: true
+    username: admin
+    password: AdminDemo2026!
+    email: admin@example.com

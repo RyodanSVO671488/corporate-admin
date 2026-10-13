@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Роли')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('roles')}"></aside>
+<div class="app-shell">
+<header th:replace="~{fragments/layout :: topbar('Роли')}"></header>
+<main id="main" class="content">
+  <h1>Роли</h1>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <p sec:authorize="hasAuthority('ROLE_WRITE')"><a th:href="@{/roles/new}">Добавить роль</a></p>
+  <div class="table-scroll" th:if="${!#lists.isEmpty(roles)}">
+    <table>
+      <thead><tr><th scope="col">Название</th><th scope="col">Описание</th><th scope="col">Права доступа</th><th scope="col">Тип</th><th scope="col" sec:authorize="hasAuthority('ROLE_WRITE')">Действия</th></tr></thead>
+      <tbody>
+      <tr th:each="role : ${roles}">
+        <td th:text="${role.name}">ROLE</td>
+        <td th:text="${role.description}">Описание роли</td>
+        <td>
+          <ul th:if="${!#sets.isEmpty(role.permissions)}"><li th:each="permission : ${role.permissions}" th:text="${permission.label}">Разрешение</li></ul>
+          <span th:if="${#sets.isEmpty(role.permissions)}">Нет разрешений</span>
+        </td>
+        <td th:text="${role.systemRole} ? 'Системная' : 'Обычная'">Тип роли</td>
+        <td sec:authorize="hasAuthority('ROLE_WRITE')">
+          <span th:if="${role.systemRole}">Изменение запрещено</span>
+          <a th:unless="${role.systemRole}" th:href="@{/roles/{id}/edit(id=${role.id})}" th:attr="aria-label=${'Редактировать роль ' + role.name}">Изменить</a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <p th:if="${#lists.isEmpty(roles)}">Роли пока не созданы.</p>
+  <p class="muted">Роль ADMIN даёт полный доступ. Её нельзя изменить.</p>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+</body>
+</html>

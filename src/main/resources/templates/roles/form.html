@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${editing ? 'Редактирование роли' : 'Новая роль'})}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('roles')}"></aside>
+<div class="app-shell">
+<header th:replace="~{fragments/layout :: topbar('Роли')}"></header>
+<main id="main" class="content">
+  <h1 th:text="${editing} ? 'Редактирование роли' : 'Новая роль'">Новая роль</h1>
+  <p><a th:href="@{/roles}">Вернуться к списку ролей</a></p>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <form th:object="${roleForm}" th:action="${editing} ? @{/roles/{id}(id=${roleId})} : @{/roles/new}" method="post" class="form-layout">
+    <input type="hidden" th:field="*{version}">
+    <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
+      <ul><li th:each="message : ${#fields.globalErrors()}" th:text="${message}"></li></ul>
+    </div>
+    <div class="field">
+      <label for="name">Название:</label>
+      <input type="text" th:field="*{name}" required maxlength="40" pattern="[A-Z][A-Z0-9_]{2,39}" autocomplete="off" th:classappend="${#fields.hasErrors('name')} ? 'input-error'" th:attr="aria-invalid=${#fields.hasErrors('name')}" aria-describedby="name-help name-error">
+      <small id="name-help">3–40 заглавных латинских букв, цифр или подчёркиваний. Первый символ — буква.</small>
+      <span id="name-error" class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+    </div>
+    <div class="field">
+      <label for="description">Описание:</label>
+      <textarea th:field="*{description}" required maxlength="180" rows="3" th:classappend="${#fields.hasErrors('description')} ? 'input-error'" th:attr="aria-invalid=${#fields.hasErrors('description')}" aria-describedby="description-error"></textarea>
+      <span id="description-error" class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+    </div>
+    <fieldset>
+      <legend>Права доступа</legend>
+      <div class="choice-list">
+        <label class="choice-card" th:each="permission : ${permissions}">
+          <input type="checkbox" th:field="*{permissions}" th:value="${permission}">
+          <span th:text="${permission.label}">Разрешение</span>
+        </label>
+      </div>
+      <p class="muted">Для права изменения добавьте соответствующее право просмотра.</p>
+      <span class="field-error" th:if="${#fields.hasErrors('permissions')}" th:errors="*{permissions}"></span>
+    </fieldset>
+    <div class="form-actions">
+      <button type="submit" th:text="${editing} ? 'Сохранить' : 'Добавить роль'">Сохранить</button>
+      <a th:href="@{/roles}">Отмена</a>
+    </div>
+  </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+</body>
+</html>

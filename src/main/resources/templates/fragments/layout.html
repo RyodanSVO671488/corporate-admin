@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title} + ' — Админ-панель'">Админ-панель</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="sidebar" th:fragment="sidebar(active)">
+  <div class="site-name">Админ-панель</div>
+  <nav class="navigation" aria-label="Основная навигация">
+    <a th:href="@{/}" th:classappend="${active == 'dashboard'} ? 'is-active'" th:attr="aria-current=${active == 'dashboard' ? 'page' : null}">Главная</a>
+    <a sec:authorize="hasAuthority('USER_READ')" th:href="@{/users}" th:classappend="${active == 'users'} ? 'is-active'" th:attr="aria-current=${active == 'users' ? 'page' : null}">Пользователи</a>
+    <a sec:authorize="hasAuthority('ROLE_READ')" th:href="@{/roles}" th:classappend="${active == 'roles'} ? 'is-active'" th:attr="aria-current=${active == 'roles' ? 'page' : null}">Роли</a>
+    <a sec:authorize="hasAuthority('AUDIT_READ')" th:href="@{/audit}" th:classappend="${active == 'audit'} ? 'is-active'" th:attr="aria-current=${active == 'audit' ? 'page' : null}">Журнал действий</a>
+  </nav>
+</header>
+<div class="topbar" th:fragment="topbar(section)">
+  <span th:text="${section}">Главная</span>
+  <div class="account">
+    <span>Вы вошли как: <strong sec:authentication="name">admin</strong></span>
+    <form th:action="@{/logout}" method="post"><button type="submit">Выйти</button></form>
+  </div>
+</div>
+<div th:fragment="messages" aria-live="polite">
+  <p th:if="${success}" class="alert alert-success" role="status" th:text="${success}"></p>
+  <p th:if="${error}" class="alert alert-error" role="alert" th:text="${error}"></p>
+</div>
+<footer th:fragment="footer" class="footer">Админ-панель корпоративного сервиса</footer>
+</body>
+</html>

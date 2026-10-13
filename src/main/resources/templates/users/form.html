@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${editing ? 'Редактирование пользователя' : 'Новый пользователь'})}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('users')}"></aside>
+<div class="app-shell">
+<header th:replace="~{fragments/layout :: topbar('Пользователи')}"></header>
+<main id="main" class="content">
+  <h1 th:text="${editing} ? 'Редактирование пользователя' : 'Новый пользователь'">Новый пользователь</h1>
+  <p><a th:href="@{/users}">Вернуться к списку пользователей</a></p>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <form th:object="${userForm}" th:action="${editing} ? @{/users/{id}(id=${userId})} : @{/users/new}" method="post" class="form-layout">
+    <input type="hidden" th:field="*{version}">
+    <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error" role="alert">
+      <ul><li th:each="message : ${#fields.globalErrors()}" th:text="${message}"></li></ul>
+    </div>
+    <div class="field">
+      <label for="username">Логин:</label>
+      <input type="text" th:field="*{username}" th:readonly="${editing}" required maxlength="40" autocomplete="off" pattern="[a-zA-Z0-9._-]{3,40}" th:classappend="${#fields.hasErrors('username')} ? 'input-error'" th:attr="aria-invalid=${#fields.hasErrors('username')}" aria-describedby="username-help username-error">
+      <small id="username-help" th:text="${editing} ? 'Логин нельзя изменить.' : '3–40 латинских букв, цифр, точек, дефисов или подчёркиваний.'"></small>
+      <span id="username-error" class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+    </div>
+    <div class="field">
+      <label for="fullName">Имя:</label>
+      <input type="text" th:field="*{fullName}" required maxlength="100" autocomplete="name" th:classappend="${#fields.hasErrors('fullName')} ? 'input-error'" th:attr="aria-invalid=${#fields.hasErrors('fullName')}" aria-describedby="fullName-error">
+      <span id="fullName-error" class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+    </div>
+    <div class="field">
+      <label for="email">Email:</label>
+      <input type="email" th:field="*{email}" required maxlength="160" autocomplete="email" th:classappend="${#fields.hasErrors('email')} ? 'input-error'" th:attr="aria-invalid=${#fields.hasErrors('email')}" aria-describedby="email-error">
+      <span id="email-error" class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+    </div>
+    <div class="field">
+      <label for="password" th:text="${editing} ? 'Новый пароль:' : 'Пароль:'">Пароль:</label>
+      <input type="password" id="password" name="password" th:required="${!editing}" minlength="12" maxlength="72" autocomplete="new-password" th:classappend="${#fields.hasErrors('password')} ? 'input-error'" th:attr="aria-invalid=${#fields.hasErrors('password')}" aria-describedby="password-help password-error">
+      <small id="password-help" th:text="${editing} ? 'Оставьте пустым, чтобы сохранить пароль. Минимум 12 символов, максимум 72 байта UTF-8.' : 'Минимум 12 символов, максимум 72 байта UTF-8.'"></small>
+      <span id="password-error" class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+    </div>
+    <div class="field">
+      <label><input type="checkbox" th:field="*{enabled}"> Пользователь активен</label>
+      <small>Отключённый пользователь не сможет войти.</small>
+      <span class="field-error" th:if="${#fields.hasErrors('enabled')}" th:errors="*{enabled}"></span>
+    </div>
+    <fieldset th:if="${canAssign}">
+      <legend>Роли</legend>
+      <div class="choice-list">
+        <label class="choice-card" th:each="role : ${roles}">
+          <input type="checkbox" th:field="*{roleIds}" th:value="${role.id}">
+          <span th:text="${role.name}">ROLE</span>
+          <span th:text="${' — ' + role.description}">Описание роли</span>
+        </label>
+      </div>
+      <p th:if="${#lists.isEmpty(roles)}">Доступных ролей нет.</p>
+      <small>Можно оставить пользователя без ролей.</small>
+      <span class="field-error" th:if="${#fields.hasErrors('roleIds')}" th:errors="*{roleIds}"></span>
+    </fieldset>
+    <p th:unless="${canAssign}">У вас нет права назначать роли. Текущие роли сохранятся, а новый пользователь будет создан без ролей.</p>
+    <div class="form-actions">
+      <button type="submit" th:text="${editing} ? 'Сохранить' : 'Добавить пользователя'">Сохранить</button>
+      <a th:href="@{/users}">Отмена</a>
+    </div>
+  </form>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+</body>
+</html>

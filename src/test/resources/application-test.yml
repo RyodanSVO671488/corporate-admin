@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:admin-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+app:
+  bootstrap:
+    demo: true
+    username: admin
+    password: AdminDemo2026!
+    email: admin@example.com

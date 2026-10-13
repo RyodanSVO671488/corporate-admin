@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Журнал действий')}"></head>
+<body>
+<aside th:replace="~{fragments/layout :: sidebar('audit')}"></aside>
+<div class="app-shell">
+<header th:replace="~{fragments/layout :: topbar('Журнал действий')}"></header>
+<main id="main" class="content">
+  <h1>Журнал действий</h1>
+  <div th:replace="~{fragments/layout :: messages}"></div>
+  <p>Всего записей: <span th:text="${entries.totalElements}">0</span>. Время московское (UTC+3).</p>
+  <div class="table-scroll" th:if="${!entries.empty}">
+    <table>
+      <thead><tr><th scope="col">Дата и время</th><th scope="col">Пользователь</th><th scope="col">Действие</th><th scope="col">Объект</th><th scope="col">Подробности</th></tr></thead>
+      <tbody>
+      <tr th:each="entry : ${entries.content}">
+        <td th:text="${#temporals.format(entry.occurredAt.atZone(T(java.time.ZoneId).of('Europe/Moscow')), 'dd.MM.yyyy HH:mm:ss')}">01.01.2026 12:00:00</td>
+        <td th:text="${entry.actor}">admin</td>
+        <td th:switch="${entry.action}">
+          <span th:case="'USER_CREATED'">Пользователь создан</span>
+          <span th:case="'USER_UPDATED'">Пользователь изменён</span>
+          <span th:case="'ROLE_CREATED'">Роль создана</span>
+          <span th:case="'ROLE_UPDATED'">Роль изменена</span>
+          <span th:case="*" th:text="${entry.action}">Действие</span>
+        </td>
+        <td th:text="${entry.target}">Объект</td>
+        <td th:text="${entry.details}">Подробности</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <p th:if="${entries.empty}">Записей пока нет.</p>
+  <nav class="pagination" th:if="${entries.totalPages > 1}" aria-label="Страницы журнала">
+    <p th:text="${'Страница ' + (entries.number + 1) + ' из ' + entries.totalPages}">Страница 1</p>
+    <a th:if="${entries.hasPrevious()}" th:href="@{/audit(page=${entries.number - 1})}">Предыдущая</a>
+    <a th:if="${entries.hasNext()}" th:href="@{/audit(page=${entries.number + 1})}">Следующая</a>
+  </nav>
+</main>
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</div>
+</body>
+</html>

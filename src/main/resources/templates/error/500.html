@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ошибка 500')}"></head>
+<body>
+<main class="content">
+  <h1>Ошибка 500: ошибка сервера</h1>
+  <p>Попробуйте позже. Если ошибка повторяется, сообщите администратору.</p>
+  <a th:href="@{/}">Вернуться на главную</a>
+</main>
+</body>
+</html>
